@@ -1,8 +1,11 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flex_color_scheme/flex_color_scheme.dart';
+import 'package:certamen1_ayudantia/theme.dart';
+import 'splashscreen.dart'; // Importa la clase SplashScreen desde el archivo splashscreen.dart
 
-void main() => runApp(const MainApp());
+void main() {
+  runApp(const MainApp());
+}
 
 class MainApp extends StatelessWidget {
   const MainApp({super.key});
@@ -10,69 +13,72 @@ class MainApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-
- // ACA SE CAMBIA EL COLOR DE LA APLICACION
-theme: FlexThemeData.light(
-  scheme: FlexScheme.purpleM3,
-  surfaceMode: FlexSurfaceMode.levelSurfacesLowScaffold,
-  blendLevel: 7,
-  subThemesData: const FlexSubThemesData(
-    blendOnLevel: 10,
-    blendOnColors: false,
-    useTextTheme: true,
-    useM2StyleDividerInM3: true,
-    useInputDecoratorThemeInDialogs: true,
-  ),
-  visualDensity: FlexColorScheme.comfortablePlatformDensity,
-  useMaterial3: true,
-  swapLegacyOnMaterial3: true,
-  // To use the Playground font, add GoogleFonts package and uncomment
-  // fontFamily: GoogleFonts.notoSans().fontFamily,
-),
-darkTheme: FlexThemeData.dark(
-  scheme: FlexScheme.purpleM3,
-  surfaceMode: FlexSurfaceMode.levelSurfacesLowScaffold,
-  blendLevel: 13,
-  subThemesData: const FlexSubThemesData(
-    blendOnLevel: 20,
-    useTextTheme: true,
-    useM2StyleDividerInM3: true,
-    useInputDecoratorThemeInDialogs: true,
-  ),
-  visualDensity: FlexColorScheme.comfortablePlatformDensity,
-  useMaterial3: true,
-  swapLegacyOnMaterial3: true,
-  // To use the Playground font, add GoogleFonts package and uncomment
-  // fontFamily: GoogleFonts.notoSans().fontFamily,
-),
-
-// HASTA ACA SE CAMBIA EL COLOR
-      home: const HomeApp(),
+      theme: MyTheme.lightTheme(),
+      //darkTheme: MyTheme.darkTheme(),
+      home: const SplashScreen(), // Mostrar la pantalla de carga primero
     );
   }
 }
-class HomeApp extends StatelessWidget {
+
+class HomeApp extends StatefulWidget {
   const HomeApp({Key? key}) : super(key: key);
+
+  @override
+  _HomeAppState createState() => _HomeAppState();
+}
+
+class _HomeAppState extends State<HomeApp> with SingleTickerProviderStateMixin {
+  late TabController _tabController;
+
+  // Agrega una variable para controlar si la pestaña "Chats" está activa
+  bool _isChatsTabActive = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 4, vsync: this);
+    _tabController.addListener(_handleTabSelection);
+  }
+
+  void _handleTabSelection() {
+    setState(() {
+      _isChatsTabActive = _tabController.index ==
+          1; // Comprueba si la pestaña "Chats" está activa
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.menu),
-          onPressed: () {
-            if (kDebugMode) {
-              print('Icono de menú presionado!');
-            }
-          },
-        ),
-        title: Text(
-          'Actores Chilenos',
-          style: Theme.of(context).textTheme.titleLarge,
+        title: const Text(
+          'Whatsapp',
+          style: TextStyle(
+            fontSize: 20,
+          ),
         ),
         actions: <Widget>[
           IconButton(
-            icon: const Icon(Icons.person),
+            color: Colors.white,
+            icon: const Icon(Icons.camera_alt_outlined),
+            onPressed: () {
+              if (kDebugMode) {
+                print('Icono de persona presionado!');
+              }
+            },
+          ),
+          IconButton(
+            color: Colors.white,
+            icon: const Icon(Icons.search),
+            onPressed: () {
+              if (kDebugMode) {
+                print('Icono de persona presionado!');
+              }
+            },
+          ),
+          IconButton(
+            color: Colors.white,
+            icon: const Icon(Icons.more_vert),
             onPressed: () {
               if (kDebugMode) {
                 print('Icono de persona presionado!');
@@ -80,124 +86,154 @@ class HomeApp extends StatelessWidget {
             },
           ),
         ],
+        //TAbBAR
+        bottom: TabBar(
+          controller: _tabController,
+          tabs: [
+          //VENTANAS DE NAVEGACION
+            _buildTabWithNumberAndColor('Grupos', 6, _isChatsTabActive),
+            _buildTabWithNumberAndColor('Chats', 8,
+                _isChatsTabActive), // Cambia el color en función de la activación
+            _buildTab('Novedades', 2),
+            _buildTabWithNumberAndColor('Llamadas', 3, _isChatsTabActive),
+          ],
+          labelColor: Colors.white,
+          unselectedLabelColor: MyTheme.lightTheme().colorScheme.secondary,
+          labelStyle: const TextStyle(
+            fontSize: 14,
+          ),
+        ),
       ),
-      //ACA EMPIEZA LA LISTA
-      body: ListView(
-        children: <Widget>[
-          Column(
-            children: <Widget>[
-              ListTile(
-                //ACA SE AGREGA UN USUARIO CON IMAGEN - 
-                leading: const CircleAvatar(
-                  backgroundImage: AssetImage(
-                      'assets/pinguino.jpg'), // CAMBIAR RUTA
-                ),
-                //HASTA ACA
-                title: const Text(
-                  'Harold',
-                ),
-                subtitle: const Text('Los héroes del norte'),
-                trailing: ElevatedButton(
-                  onPressed: () {
-                    // Agrega la lógica para seguir aquí
-                    if (kDebugMode) {
-                      print('Seguir a Benjamín Vicuña');
-                    }
-                  },
-                  child: const Text('Seguir'),
-                ),
-                onTap: () {
-                  if (kDebugMode) {
-                    print('Item seleccionado: Benjamín Vicuña');
-                  }
-                },
-              ),
-              const Divider(),
-              ListTile(
-                //ACA SE AGREGA UN USUARIO CON LETRA
-                leading: const CircleAvatar(
-                  child: Text(
-                    'D',
+      body: Column(
+        children: [
+          // Agrega el Container blanco debajo de las pestañas
+          Container(
+            width: double.infinity,
+            height: 50,
+            color: Colors.white,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Padding(
+                  //SEPARACION
+                  padding: const EdgeInsets.only(left: 16.0),
+                  child: Icon(
+                    Icons.archive_outlined,
+                    color: MyTheme.lightTheme().colorScheme.primary,
+                    size: 24,
                   ),
                 ),
-                title: const Text(
-                  'Daniela Vega',
-                ),
-                subtitle: const Text('Los héroes del norte'),
-                trailing: ElevatedButton(
-                  onPressed: () {
-                    // Agrega la lógica para seguir aquí
-                    if (kDebugMode) {
-                      print('Seguir a Daniela Vega');
-                    }
-                  },
-                  child: const Text('Seguir'),
-                ),
-                onTap: () {
-                  if (kDebugMode) {
-                    print('Item seleccionado: Daniela Vega');
-                  }
-                },
-              ),
-              const Divider(),
-              ListTile(
-                //ACA SE AGREGA UN USUARIO CON LETRA
-                leading: const CircleAvatar(
+                const Padding(
+                  // Ajusta el espacio entre el ícono y el texto
+                  padding: EdgeInsets.only(left: 12.0),
                   child: Text(
-                    'B',
+                    'Archivados',
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 12,
+                    ),
                   ),
                 ),
-                title: const Text(
-                  'Blanca Lewin',
+                const Spacer(),
+              ],
+            ),
+          ),
+          Expanded(
+            child: TabBarView(
+              controller: _tabController,
+              children: const [
+                Center(
+                  child: Text('Pestaña de Grupos'),
                 ),
-                subtitle: const Text('Los héroes del norte'),
-                trailing: ElevatedButton(
-                  onPressed: () {
-                    // Agrega la lógica para seguir aquí
-                    if (kDebugMode) {
-                      print('Seguir a Blanca Lewin');
-                    }
-                  },
-                  child: const Text('Seguir'),
+                Center(
+                  child: Text('Pestaña de Chats'),
+                  
+
+
+                  
+
+
+
+
+                  
                 ),
-                onTap: () {
-                  if (kDebugMode) {
-                    print('Item seleccionado: Blanca Lewin');
-                  }
-                },
-              ),
-              const Divider(),
-            ],
+                Center(
+                  child: Text('Pestaña de Novedades'),
+                ),
+                Center(
+                  child: Text('Pestaña de Llamadas'),
+                ),
+              ],
+            ),
           ),
         ],
       ),
-      bottomNavigationBar: BottomAppBar(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: <Widget>[
-            IconButton(
-              //ICONOS - VISITAR FONTS ICONS - https://fonts.google.com/icons
-              icon: const Icon(Icons.home),
-              onPressed: () {
-                // Agrega la lógica para el botón Home aquí
-              },
-            ),
-            IconButton(
-              //ICONOS
-              icon: const Icon(Icons.add),
-              onPressed: () {
-                // Agrega la lógica para el botón Add aquí
-              },
-            ),
-            IconButton(
-              
-              icon: const Icon(Icons.video_library),
-              onPressed: () {
-                // Agrega la lógica para el botón Video aquí
-              },
-            ),
-          ],
+
+      //ACA SE AGREGA EL FAB
+     floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          // Agrega aquí la lógica para manejar el botón de mensaje
+          if (kDebugMode) {
+            print('Botón de mensaje presionado!');
+          }
+        },
+        backgroundColor: MyTheme.lightTheme().colorScheme.primary,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(
+              10.0), // Personaliza el radio para hacerlo cuadrado
+        ), // Color primario
+        child: const Icon(
+          Icons.message, // Icono de mensaje
+          color: Colors.white, // Color blanco
         ),
+      ), // Cierra FloatingActionButton
+      floatingActionButtonLocation: FloatingActionButtonLocation
+          .endFloat, // Posición en la esquina inferior derecha
+
+//HASTA ACA SE AGREGA EL FAB
+    );
+  }
+
+  Widget _buildTab(String title, int index) {
+    return Tab(
+      child: Text(title),
+    );
+  }
+
+  Widget _buildTabWithNumberAndColor(String title, int number, bool isActive) {
+    final circleColor = isActive
+        ? Colors.white // Cambia el color del círculo a blanco si está activo
+        : MyTheme.lightTheme()
+            .colorScheme
+            .tertiary; // Color secundario para el círculo si está inactivo
+
+    return Tab(
+      child: Row(
+        children: [
+          Text(title),
+          const SizedBox(
+              width: 4), // Ajusta el espacio entre el texto y el círculo
+          Container(
+            width: 16,
+            height: 16,
+            margin: const EdgeInsets.only(
+                left: 4), // Agrega un margen a la izquierda del círculo
+            decoration: BoxDecoration(
+              color: circleColor, // Color del círculo
+              shape: BoxShape.circle,
+            ),
+            child: Center(
+              child: Text(
+                number.toString(),
+                style: TextStyle(
+                  color: MyTheme.lightTheme().colorScheme.primary,
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
